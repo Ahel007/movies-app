@@ -1,0 +1,58 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('../../fonst/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+* {
+  font-family: 'Inter', sans-serif !important;
+}
+body {
+  background: #f7f7f7;
+}
+.layout {
+  width: 1010px;
+  margin-inline: auto;
+  padding: 23px;
+  padding-left: 32px;
+  background: white;
+}
+
+.layout .list .list__item {
+  width: 451px;
+  height: 279px;
+  margin-bottom: 34px;
+  box-shadow: 0 4px 12px 3px rgba(0, 0, 0, 0.15);
+}
+.list__item .list__sider {
+  width: 183px;
+  height: 281px;
+}
+
+.list__sider,
+.list__header {
+  background: inherit;
+  padding: 0;
+}
+.list__body .list__header {
+  height: max-content;
+}
+.list__body .list__title {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+.list__body {
+  gap: 7px;
+  padding: 10px;
+  padding-left: 20px;
+  background: white;
+}
+.list__body span {
+  font-size: 12px;
+  line-height: 183%;
+}
+.list__body .list__button {
+  width: 46px;
+  height: 20px;
+}
