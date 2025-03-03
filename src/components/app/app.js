@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { List, Layout, Image, Typography, Button, Flex } from 'antd';
-import { format } from 'date-fns';
+import { Layout, Spin, Alert } from 'antd';
 
+import MoviesList from '../movies-list';
 import MoviesServices from '../../services/movies-services';
+import MoviesError from '../movies-error';
 
 import './app.css';
 
@@ -11,6 +12,8 @@ export default class App extends Component {
 
   state = {
     movies: [],
+    loading: true,
+    error: false,
   };
 
   constructor() {
@@ -18,72 +21,42 @@ export default class App extends Component {
     this.updateMovie();
   }
 
-  updateMovie() {
-    this.moviesServices.getMovies('return').then((movies) => {
-      this.setState({ movies });
-    });
-  }
+  onMoviesLoaded = (movies) => {
+    this.setState({ movies, loading: false });
+  };
 
-  cropDescription(text) {
-    if (text.length >= 250) {
-      const crop = text.slice(0, 250);
-      return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
-    }
-    return text;
+  onError = (err) => {
+    console.log(err);
+    this.setState({ error: true, loading: false });
+  };
+
+  updateMovie() {
+    this.moviesServices.getMovies('return').then(this.onMoviesLoaded).catch(this.onError);
   }
 
   render() {
+    const { movies, loading, error } = this.state;
+
+    const content = !error ? <MoviesView movies={movies} loading={loading} /> : <MoviesError />;
+    const checkInternet = !navigator.onLine ? (
+      <Alert message="Error" description="Something has gone.Couldn't display movies" type="error" showIcon closable />
+    ) : (
+      content
+    );
     return (
       <div className="app">
         <Layout className="layout">
-          <Layout.Content>
-            <List
-              grid={{ column: 2 }}
-              dataSource={this.state.movies}
-              className="list"
-              renderItem={(movie) => (
-                <List.Item className="list__item">
-                  <Layout>
-                    <Layout.Sider className="list__sider" width={183}>
-                      <Image
-                        src={
-                          movie.poster
-                            ? `https://image.tmdb.org/t/p/w500${movie.poster}`
-                            : 'https://avatars.mds.yandex.net/i?id=ad23d8603b33eb7b8fa2315dd97c79278d1e04073eb1e3d4-12447078-images-thumbs&n=13'
-                        }
-                        width={183}
-                        height={281}
-                        alt="The film's logo"
-                      />
-                    </Layout.Sider>
-                    <Layout className="list__body">
-                      <Layout.Header className="list__header">
-                        <Typography.Title level={2} className="list__title">
-                          {movie.title}
-                        </Typography.Title>
-                      </Layout.Header>
-                      <Typography.Text type="secondary">
-                        {movie.releaseDate ? format(new Date(movie.releaseDate), 'LLLL d, yyyy') : null}
-                      </Typography.Text>
-                      <Flex gap="small">
-                        <Button block className="list__button">
-                          Default
-                        </Button>
-                        <Button block className="list__button">
-                          Default
-                        </Button>
-                      </Flex>
-                      <Typography.Text className="list__content">
-                        {this.cropDescription(movie.description)}
-                      </Typography.Text>
-                    </Layout>
-                  </Layout>
-                </List.Item>
-              )}
-            />
-          </Layout.Content>
+          <Layout.Content>{checkInternet}</Layout.Content>
         </Layout>
       </div>
     );
   }
 }
+
+const MoviesView = ({ movies, loading }) => {
+  return (
+    <Spin tip="Loading" size="large" spinning={loading} className="spin">
+      <MoviesList movies={movies} />
+    </Spin>
+  );
+};
