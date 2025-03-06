@@ -14,11 +14,15 @@ body {
 .layout {
   width: 1010px;
   margin-inline: auto;
-  padding: 23px;
-  padding-left: 32px;
+  padding: 36px;
   background: white;
+  gap: 36px;
 }
 
 .spin {
   background: white;
+}
+
+.ant-pagination-options {
+  display: none !important;
 }

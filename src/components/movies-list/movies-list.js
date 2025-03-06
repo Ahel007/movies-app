@@ -14,11 +14,20 @@ export default class MoviesList extends Component {
   }
 
   render() {
+    const { movies, onChangePage, totalResults } = this.props;
     return (
       <List
-        grid={{ column: 2 }}
-        dataSource={this.props.movies}
+        grid={{ gutter: 32, column: 2 }}
+        dataSource={movies}
         className="list"
+        pagination={{
+          pageSize: 20,
+          total: totalResults,
+          align: 'center',
+          onChange: (a) => {
+            onChangePage(a);
+          },
+        }}
         renderItem={(movie) => (
           <List.Item className="list__item">
             <Layout>

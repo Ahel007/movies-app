@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Layout, Spin, Alert } from 'antd';
+import { Layout, Spin, Alert, Input } from 'antd';
+import { debounce } from 'lodash';
 
 import MoviesList from '../movies-list';
 import MoviesServices from '../../services/movies-services';
@@ -12,17 +13,23 @@ export default class App extends Component {
 
   state = {
     movies: [],
-    loading: true,
+    page: 1,
+    totalResults: null,
+    value: '',
+    loading: false,
     error: false,
   };
 
-  constructor() {
-    super();
-    this.updateMovie();
+  componentDidUpdate(...prev) {
+    const { page, value } = this.state;
+    if (page !== prev[1].page) {
+      this.updateMovie(value, page);
+    }
   }
 
   onMoviesLoaded = (movies) => {
-    this.setState({ movies, loading: false });
+    const { results, totalResults } = movies;
+    this.setState({ movies: results, loading: false, totalResults });
   };
 
   onError = (err) => {
@@ -30,33 +37,57 @@ export default class App extends Component {
     this.setState({ error: true, loading: false });
   };
 
-  updateMovie() {
-    this.moviesServices.getMovies('return').then(this.onMoviesLoaded).catch(this.onError);
+  updateMovie(text, page) {
+    this.moviesServices.getMovies(text, page).then(this.onMoviesLoaded).catch(this.onError);
   }
 
-  render() {
-    const { movies, loading, error } = this.state;
+  debounceUpdateMovie = debounce(() => {
+    this.updateMovie(this.state.value);
+  }, 2000);
 
-    const content = !error ? <MoviesView movies={movies} loading={loading} /> : <MoviesError />;
+  search = (e) => {
+    this.setState({ value: e.target.value, loading: true, movies: [] });
+    if (e.target.value) {
+      this.debounceUpdateMovie();
+    } else {
+      this.setState({ loading: false, totalResults: null });
+    }
+  };
+
+  onChangePage = (page) => {
+    this.setState({ page });
+  };
+
+  render() {
+    const { movies, loading, error, value, totalResults } = this.state;
+    const content = !error ? (
+      <MoviesView movies={movies} loading={loading} onChangePage={this.onChangePage} totalResults={totalResults} />
+    ) : (
+      <MoviesError />
+    );
     const checkInternet = !navigator.onLine ? (
       <Alert message="Error" description="Something has gone.Couldn't display movies" type="error" showIcon closable />
     ) : (
       content
     );
+    const notMovies = (
+      <Alert message="Warning" description="Couldn't find a movie with that name" type="warning" showIcon closable />
+    );
     return (
       <div className="app">
         <Layout className="layout">
-          <Layout.Content>{checkInternet}</Layout.Content>
+          <Input placeholder="Type to search..." className="layout__input" onChange={this.search} value={value} />
+          <Layout.Content>{totalResults === 0 && !loading ? notMovies : checkInternet}</Layout.Content>
         </Layout>
       </div>
     );
   }
 }
 
-const MoviesView = ({ movies, loading }) => {
+const MoviesView = ({ movies, loading, onChangePage, totalResults }) => {
   return (
     <Spin tip="Loading" size="large" spinning={loading} className="spin">
-      <MoviesList movies={movies} />
+      <MoviesList movies={movies} onChangePage={onChangePage} totalResults={totalResults} />
     </Spin>
   );
 };

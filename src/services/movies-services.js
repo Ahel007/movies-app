@@ -8,8 +8,8 @@ export default class MoviesServices {
     },
   };
 
-  async getResourse(keyWord) {
-    const url = `https://api.themoviedb.org/3/search/movie?query=${keyWord}&include_adult=false&language=en-US&page=1`;
+  async getResourse(keyWord, page = 1) {
+    const url = `https://api.themoviedb.org/3/search/movie?query=${keyWord}&include_adult=false&language=en-US&page=${page}`;
     const result = await fetch(url, this._options);
     if (!result.ok) {
       throw new Error(`Could not fetch ${url}, received ${result.status}`);
@@ -17,9 +17,9 @@ export default class MoviesServices {
     return result.json();
   }
 
-  async getMovies(keyWord) {
-    const movies = await this.getResourse(keyWord);
-    return movies.results.map((movie) => {
+  async getMovies(keyWord, page) {
+    const movies = await this.getResourse(keyWord, page);
+    const result = movies.results.map((movie) => {
       return {
         title: movie.title,
         description: movie.overview,
@@ -27,5 +27,9 @@ export default class MoviesServices {
         poster: movie.poster_path,
       };
     });
+    return {
+      results: result,
+      totalResults: movies.total_results,
+    };
   }
 }
