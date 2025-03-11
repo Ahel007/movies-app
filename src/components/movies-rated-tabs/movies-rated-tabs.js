@@ -20,9 +20,23 @@ export default class MoviesRatedTabs extends Component {
 
   async componentDidMount() {
     try {
-      const guestSessionId = await this.moviesServices.createGuestSession();
-      const result = await this.moviesServices.getRatedMovies(this.state.page, guestSessionId);
-      this.setState({ movies: result, loading: false });
+      this.moviesServices
+        .getRatedMovies(this.state.page, this.props.guestSessionId)
+        .then(this.onMoviesLoaded)
+        .catch(this.onError);
+    } catch (error) {
+      this.setState({ error: true });
+      console.error(error);
+    }
+  }
+  async componentDidUpdate(...prev) {
+    try {
+      if (this.state.page !== prev[1].page && this.state.totalResults !== prev[1].totalResults) {
+        this.moviesServices
+          .getRatedMovies(this.state.page, this.props.guestSessionId)
+          .then(this.onMoviesLoaded)
+          .catch(this.onError);
+      }
     } catch (error) {
       this.setState({ error: true });
       console.error(error);
@@ -45,15 +59,20 @@ export default class MoviesRatedTabs extends Component {
 
   render() {
     const { movies, loading, error, totalResults } = this.state;
-
     const content = !error ? (
-      <MoviesView movies={movies} loading={loading} onChangePage={this.onChangePage} totalResults={totalResults} />
+      <MoviesView
+        movies={movies}
+        loading={loading}
+        onChangePage={this.onChangePage}
+        totalResults={totalResults}
+        guestSessionId={this.props.guestSessionId}
+      />
     ) : (
       <MoviesError />
     );
 
     const checkInternet = !navigator.onLine ? (
-      <Alert message="Error" description="Something has gone. Couldn't display movies" type="error" showIcon closable />
+      <Alert message="Error" description="Couldn't find rated movies" type="error" showIcon closable />
     ) : (
       content
     );

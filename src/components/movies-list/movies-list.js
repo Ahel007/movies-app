@@ -28,8 +28,7 @@ export default class MoviesList extends Component {
   }
 
   render() {
-    const { movies, onChangePage, totalResults } = this.props;
-
+    const { movies, onChangePage, totalResults, guestSessionId } = this.props;
     return (
       <List
         grid={{ gutter: 32, column: 2 }}
@@ -76,8 +75,9 @@ export default class MoviesList extends Component {
                   className="list__rate"
                   count={10}
                   allowHalf
+                  defaultValue={movie.rating}
                   onChange={(rate) => {
-                    this.moviesService.addRating(movie.id, rate);
+                    this.moviesService.addRating(movie.id, rate, guestSessionId);
                   }}
                 />
               </Layout>

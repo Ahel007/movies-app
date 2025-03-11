@@ -14,11 +14,13 @@ export default class App extends Component {
 
   state = {
     genre: [],
+    guestSessionId: '',
   };
 
   async componentDidMount() {
     const result = await this.moviesServices.getGenre();
-    this.setState({ genre: result });
+    const guestSessionId = await this.moviesServices.createGuestSession();
+    this.setState({ genre: result, guestSessionId });
   }
 
   render() {
@@ -26,12 +28,12 @@ export default class App extends Component {
       {
         key: '1',
         label: 'Search',
-        children: <MoviesSearchTabs onError={this.onError} onMoviesLoaded={this.onMoviesLoaded} />,
+        children: <MoviesSearchTabs guestSessionId={this.state.guestSessionId} />,
       },
       {
         key: '2',
         label: 'Rated',
-        children: <MoviesRatedTabs />,
+        children: <MoviesRatedTabs guestSessionId={this.state.guestSessionId} />,
       },
     ];
 

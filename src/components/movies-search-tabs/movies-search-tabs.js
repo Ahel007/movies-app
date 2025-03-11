@@ -62,7 +62,13 @@ export default class MoviesSearchTabs extends Component {
     const { movies, loading, error, value, totalResults } = this.state;
 
     const content = !error ? (
-      <MoviesView movies={movies} loading={loading} onChangePage={this.onChangePage} totalResults={totalResults} />
+      <MoviesView
+        movies={movies}
+        loading={loading}
+        onChangePage={this.onChangePage}
+        totalResults={totalResults}
+        guestSessionId={this.props.guestSessionId}
+      />
     ) : (
       <MoviesError />
     );

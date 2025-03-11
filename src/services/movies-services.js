@@ -62,10 +62,10 @@ export default class MoviesServices {
     return result.genres;
   }
 
-  async addRating(movieId, rate) {
-    const url = `https://api.themoviedb.org/3/movie/${movieId}/rating`;
+  async addRating(movieId, rate, guestSessionId) {
+    const url = `https://api.themoviedb.org/3/movie/${movieId}/rating?guest_session_id=${guestSessionId}`;
 
-    const result = fetch(url, this._optionsPOST(rate))
+    fetch(url, this._optionsPOST(rate))
       .then((res) => res.json())
       .then((json) => {
         if (!json.success) {
@@ -74,7 +74,6 @@ export default class MoviesServices {
         return json;
       })
       .catch((err) => console.error(err));
-    console.log(result);
   }
 
   async createGuestSession() {
@@ -89,23 +88,18 @@ export default class MoviesServices {
         return json;
       })
       .catch((err) => console.error(err));
-    console.log('createGuestSession:', result);
     return result.guest_session_id;
   }
 
   async getRatedMovies(page = 1, guestSessionId) {
-    const url = `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies?api_key=${this._apiKey}&language=en-US&page=${page}&sort_by=created_at.asc`;
+    const url = `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies?language=en-US&page=${page}&sort_by=created_at.asc`;
 
     const movies = await fetch(url, this._optionsGET)
       .then((res) => res.json())
       .then((json) => {
-        if (!json.success) {
-          throw new Error('Couldnt get a list of movies');
-        }
         return json;
       })
       .catch((err) => console.error(err));
-    console.log('getRatedMovies:', movies, guestSessionId);
     const result = movies.results.map((movie) => {
       return {
         title: movie.title,
@@ -114,9 +108,10 @@ export default class MoviesServices {
         poster: movie.poster_path,
         genreIds: movie.genre_ids,
         rate: movie.vote_average,
+        id: movie.id,
+        rating: movie.rating,
       };
     });
-    console.log(result);
     return {
       results: result,
       totalResults: movies.total_results,
