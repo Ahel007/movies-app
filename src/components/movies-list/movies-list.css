@@ -33,6 +33,11 @@
 .list__body span {
   font-size: 12px;
   line-height: 183%;
+  max-height: 120px;
+  overflow: auto;
+}
+.list__body span::-webkit-scrollbar {
+  display: none;
 }
 .list__body .list__rate {
   margin-top: auto;
@@ -41,4 +46,3 @@
 .list__body .list__rate span {
   font-size: 16px;
 }
-
