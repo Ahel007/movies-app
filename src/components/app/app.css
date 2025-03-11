@@ -12,7 +12,7 @@ body {
   background: #f7f7f7;
 }
 .layout {
-  width: 1010px;
+  max-width: 1010px;
   margin-inline: auto;
   padding: 36px;
   padding-top: 20px;

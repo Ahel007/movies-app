@@ -12,15 +12,16 @@ export default class MoviesList extends Component {
   moviesService = new MoviesServices();
 
   cropDescription(text) {
-    if (text.length >= 205) {
-      const crop = text.slice(0, 205);
+    const crop = text.slice(0, 205);
+    if (text.length >= 205 && window.innerWidth >= 700) {
       return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
     }
-    return text;
+
+    return crop;
   }
 
   cropTitle(text) {
-    if (text.length >= 37) {
+    if (text.length >= 37 && window.innerWidth >= 600) {
       const crop = text.slice(0, 37);
       return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
     }
@@ -31,7 +32,7 @@ export default class MoviesList extends Component {
     const { movies, onChangePage, totalResults, guestSessionId } = this.props;
     return (
       <List
-        grid={{ gutter: 32, column: 2 }}
+        grid={{ gutter: 32, column: window.innerWidth < 1010 ? 1 : 2 }}
         dataSource={movies}
         className="list"
         pagination={{
