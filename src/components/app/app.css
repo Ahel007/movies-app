@@ -15,6 +15,7 @@ body {
   width: 1010px;
   margin-inline: auto;
   padding: 36px;
+  padding-top: 20px;
   background: white;
   gap: 36px;
 }
@@ -25,4 +26,9 @@ body {
 
 .ant-pagination-options {
   display: none !important;
+}
+.layout__input{
+  margin-bottom: 34px;
+  padding: 9px 12px;
+  font-size: 16px;
 }

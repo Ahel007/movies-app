@@ -1,0 +1,14 @@
+.list__body .list__button {
+  width: max-content;
+  height: 20px;
+  padding: 1px 3px;
+  box-sizing: border-box;
+}
+.list__genre {
+  min-height: 20px;
+  overflow: auto;
+}
+
+.list__genre::-webkit-scrollbar {
+  display: none;
+}

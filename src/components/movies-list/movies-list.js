@@ -1,13 +1,27 @@
 import React, { Component } from 'react';
-import { List, Layout, Image, Typography, Button, Flex } from 'antd';
+import { List, Layout, Image, Typography, Flex, Rate } from 'antd';
 import { format } from 'date-fns';
+
+import MoviesServices from '../../services/movies-services';
+import MoviesRate from '../movies-rate';
+import MoviesGenre from '../movies-genre';
 
 import './movies-list.css';
 
 export default class MoviesList extends Component {
+  moviesService = new MoviesServices();
+
   cropDescription(text) {
-    if (text.length >= 250) {
-      const crop = text.slice(0, 250);
+    if (text.length >= 205) {
+      const crop = text.slice(0, 205);
+      return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
+    }
+    return text;
+  }
+
+  cropTitle(text) {
+    if (text.length >= 37) {
+      const crop = text.slice(0, 37);
       return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
     }
     return text;
@@ -15,6 +29,7 @@ export default class MoviesList extends Component {
 
   render() {
     const { movies, onChangePage, totalResults } = this.props;
+
     return (
       <List
         grid={{ gutter: 32, column: 2 }}
@@ -44,23 +59,27 @@ export default class MoviesList extends Component {
                 />
               </Layout.Sider>
               <Layout className="list__body">
-                <Layout.Header className="list__header">
-                  <Typography.Title level={2} className="list__title">
-                    {movie.title}
-                  </Typography.Title>
-                </Layout.Header>
+                <Flex justify="space-between">
+                  <Layout.Header className="list__header">
+                    <Typography.Title level={2} className="list__title">
+                      {this.cropTitle(movie.title)}
+                    </Typography.Title>
+                  </Layout.Header>
+                  <MoviesRate rate={movie.rate} />
+                </Flex>
                 <Typography.Text type="secondary">
                   {movie.releaseDate ? format(new Date(movie.releaseDate), 'LLLL d, yyyy') : null}
                 </Typography.Text>
-                <Flex gap="small">
-                  <Button block className="list__button">
-                    Default
-                  </Button>
-                  <Button block className="list__button">
-                    Default
-                  </Button>
-                </Flex>
+                <MoviesGenre movie={movie} />
                 <Typography.Text className="list__content">{this.cropDescription(movie.description)}</Typography.Text>
+                <Rate
+                  className="list__rate"
+                  count={10}
+                  allowHalf
+                  onChange={(rate) => {
+                    this.moviesService.addRating(movie.id, rate);
+                  }}
+                />
               </Layout>
             </Layout>
           </List.Item>
