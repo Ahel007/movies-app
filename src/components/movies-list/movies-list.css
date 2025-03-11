@@ -41,8 +41,4 @@
 .list__body .list__rate span {
   font-size: 16px;
 }
-@media (max-width: 1009px) {
-  .list__body .list__title {
-    max-width: 80%;
-  }
-}
+

@@ -21,7 +21,7 @@ export default class MoviesList extends Component {
   }
 
   cropTitle(text) {
-    if (text.length >= 37 && window.innerWidth >= 600) {
+    if (text.length >= 37 && (window.innerWidth >= 1009 || window.innerWidth <= 600)) {
       const crop = text.slice(0, 37);
       return crop.slice(0, crop.lastIndexOf(' ')) + ' ...';
     }
